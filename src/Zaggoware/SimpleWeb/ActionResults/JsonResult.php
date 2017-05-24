@@ -23,7 +23,7 @@ class JsonResult extends ActionResult {
      * @return string
      */
     public function executeResult(IController $controller) {
-        //header("Content-Type: text/json");
+        header("Content-Type: text/json");
         
         if ($this->object instanceof IEnumerable) {
             $this->object = $this->object->toArray();
