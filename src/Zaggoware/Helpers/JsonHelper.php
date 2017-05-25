@@ -54,6 +54,24 @@ class JsonHelper {
                 : json_encode($object, $options, $depth));
     }
 
+    public static function deserialize($json, $type) {
+        $obj = json_decode($json);
+        $type = $type instanceof Type ? $type : new Type($type);
+        $instance = $type->createInstance();
+
+        foreach ($obj as $key => $val) {
+            $property = $type->getProperty($key);
+
+            if ($property === null || !$property->hasSetterMethod()) {
+                continue;
+            }
+
+            $property->setValue($instance, $val);
+        }
+
+        return $instance;
+    }
+
     private static function makeValueSerializable($value, $ignoreNullValues) {
         if ($value instanceof \DateTime) {
             return $value->format("Y-m-d\\TH:i:s\\Z");

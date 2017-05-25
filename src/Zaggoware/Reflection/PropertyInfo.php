@@ -128,6 +128,32 @@ class PropertyInfo implements IProperty {
         return $getterMethod->invoke($instance);
     }
 
+    public function setValue($instance, $value) {
+        $instanceType = new Type($instance);
+        if ($instanceType->isBuiltInType()) {
+            throw new \ReflectionException("Cannot invoke on built-in types.");
+        }
+
+        if (!$instanceType->equals($this->type) && !$this->type->isDerivedFrom($instanceType)) {
+            throw new \ReflectionException("\$instance is not of type '{$this->type->getName()}'.");
+        }
+
+        if (!$this->hasSetterMethod()) {
+            throw new \ReflectionException("Property does not have a setter method.");
+        }
+
+        $setterMethod = $this->getSetterMethod();
+        if (!$setterMethod->hasParameters()) {
+            throw new \ReflectionException("Cannot invoke setter-method. Missing value parameter.");
+        }
+
+        if ($setterMethod->getParameters()->count() > 1) {
+            throw new \ReflectionException("Cannot invoke setter-method. Only 1 parameter is supported.");
+        }
+
+        $setterMethod->invoke($instance, $value);
+    }
+
     /**
      * @return string
      */
