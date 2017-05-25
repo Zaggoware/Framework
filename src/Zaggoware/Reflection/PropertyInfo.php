@@ -37,7 +37,10 @@ class PropertyInfo implements IProperty {
      */
     public function hasGetterMethod() {
         if ($this->getterMethod === false) {
-            return $this->type->hasMethod("get". ucfirst($this->name));
+            $uName = ucfirst($this->name);
+            return $this->type->hasMethod("get". $uName)
+                || $this->type->hasMethod("is". $uName)
+                || $this->type->hasMethod("has". $uName);
         }
 
         return $this->getterMethod !== null;
@@ -48,7 +51,12 @@ class PropertyInfo implements IProperty {
      */
     public function getGetterMethod() {
         if ($this->getterMethod === false) {
-            $this->getterMethod = $this->type->getMethod("get". ucfirst($this->name));
+            $uName = ucfirst($this->name);
+            $getterMethod = $this->type->getMethod("get". $uName);
+            $getterMethod = $getterMethod === null ? $this->type->getMethod("is". $uName) : $getterMethod;
+            $getterMethod = $getterMethod === null ? $this->type->getMethod("has". $uName) : $getterMethod;
+
+            $this->getterMethod = $getterMethod;
         }
 
         return $this->getterMethod;
