@@ -188,7 +188,6 @@ namespace Zaggoware\Data\MySql {
                 if (is_array($value)) {
                     $mappings[$key] = new Dictionary($value);
                 } else if (!($value instanceof KeyValuePair)) {
-                    var_dump($value);
                     throw new \InvalidArgumentException("mappings");
                 }
             }

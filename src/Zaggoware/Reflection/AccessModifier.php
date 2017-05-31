@@ -4,15 +4,10 @@ namespace Zaggoware\Reflection;
 
 class AccessModifier {
     const PUBLIC_M = "public";
-
     const PROTECTED_M = "protected";
-
     const PRIVATE_M = "private";
-
     const DEFAULT_M = self::PUBLIC_M;
-
     const FIELD_DEFAULT = self::PRIVATE_M;
-
     const METHOD_DEFAULT = self::PUBLIC_M;
 
     public static function validate($accessModifier) {

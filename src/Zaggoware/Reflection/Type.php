@@ -384,11 +384,21 @@ final class Type extends \stdClass implements IType {
      * @return IEnumerable<PropertyInfo>
      */
     public function getProperties($filter = null) {
-        $properties = new ArrayList(
-            $filter !== null
-                ? $this->reflectionClass->getProperties($filter)
-                : $this->reflectionClass->getProperties());
+//        $properties = new ArrayList(
+//            $filter !== null
+//                ? $this->reflectionClass->getProperties($filter)
+//                : $this->reflectionClass->getProperties());
         $type = $this;
+
+        $properties = new ArrayList();
+        $rc = $this->reflectionClass;
+        do {
+            $properties = $properties->union(
+                $filter !== null
+                    ? $rc->getProperties($filter)
+                    : $rc->getProperties());
+        }
+        while ($rc = $rc->getParentClass());
 
         return $properties->where(function(\ReflectionProperty $reflectionProperty) use($type) {
             $name = $reflectionProperty->getName();
@@ -488,7 +498,7 @@ final class Type extends \stdClass implements IType {
      * @return string
      */
     public function getAccessModifier() {
-        return "public";
+        return AccessModifier::PUBLIC_M;
     }
 
     /**
@@ -528,7 +538,15 @@ final class Type extends \stdClass implements IType {
             return false;
         }
 
-        return $this->reflectionClass->hasMethod($methodName);
+        $rc = $this->reflectionClass;
+        do {
+            if ($rc->hasMethod($methodName)) {
+                return true;
+            }
+        }
+        while ($rc = $rc->getParentClass());
+
+        return false;
     }
 
     /**
@@ -552,7 +570,15 @@ final class Type extends \stdClass implements IType {
             return false;
         }
 
-        return $this->reflectionClass->hasProperty($fieldName);
+        $rc = $this->reflectionClass;
+        do {
+            if ($rc->hasProperty($fieldName)){
+                return true;
+            }
+        }
+        while ($rc = $rc->getParentClass());
+
+        return false;
     }
 
     /**
@@ -564,7 +590,7 @@ final class Type extends \stdClass implements IType {
             return false;
         }
 
-        return  $this->hasProperty($memberName) || $this->hasMethod($memberName) || $this->hasField($memberName);
+        return $this->hasProperty($memberName) || $this->hasMethod($memberName) || $this->hasField($memberName);
     }
 
     /**

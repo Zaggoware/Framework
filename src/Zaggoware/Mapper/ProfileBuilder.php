@@ -63,7 +63,7 @@ class ProfileBuilder {
             throw new ArgumentNullException("propertyName");
         }
 
-        if ($destination === null) {
+        if ($destination === null && empty($optionsAction)) {
             throw new ArgumentNullException("destination");
         }
 

@@ -100,8 +100,6 @@ class ClassWriter {
             /** @var FieldBuilder $field */
             $field = $pair->getValue();
 
-            var_dump($field);
-
             $result .= $this->writeField($field);
         }
 

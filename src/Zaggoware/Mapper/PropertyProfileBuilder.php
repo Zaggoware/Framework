@@ -31,8 +31,13 @@ class PropertyProfileBuilder extends ProfileBuilder {
 
     /**
      * @return PropertyProfile
+     * @throws \Exception
      */
     public function getProfile() {
+        if (!$this->isIgnored && $this->destinationType === null) {
+            throw new \Exception("Cannot create profile without destination type.");
+        }
+
         $profile = new PropertyProfile($this->sourceType, $this->propertyInfo, $this->destinationType, $this->isIgnored);
 
         $this->addPropertyProfiles($profile);
