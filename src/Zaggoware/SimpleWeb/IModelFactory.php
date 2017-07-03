@@ -2,12 +2,14 @@
 
 namespace Zaggoware\SimpleWeb {
 
+    use Zaggoware\Reflection\MethodInfo;
+
     interface IModelFactory {
         /**
-         * @param \ReflectionMethod $method
+         * @param MethodInfo $method
          * @return array
          */
-        function buildModels(\ReflectionMethod $method);
+        function buildModels(MethodInfo $method);
     }
 }
 

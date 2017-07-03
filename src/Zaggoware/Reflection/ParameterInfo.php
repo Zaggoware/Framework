@@ -24,51 +24,76 @@ class ParameterInfo implements IParameterInfo {
     private $reflectionParameter;
 
     /**
+     * @return Type
+     */
+    public function getDeclaringType() {
+        return $this->type;
+    }
+
+    /**
+     * @return Type
+     */
+    public function getType() {
+        if (($c = $this->reflectionParameter->getClass()) === null) {
+            return null;
+        }
+
+        return new Type($c);
+    }
+
+    /**
      * @return bool
      */
-    function isOptional() {
+    public function isOptional() {
         return $this->reflectionParameter->isOptional();
     }
 
     /**
      * @return string
      */
-    function getName() {
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @return string
      */
-    function getAccessModifier() {
+    public function getAccessModifier() {
         return null;
     }
 
     /**
      * @return bool
      */
-    function isPrivate() {
+    public function isPrivate() {
         return false;
     }
 
     /**
      * @return bool
      */
-    function isPublic() {
+    public function isPublic() {
         return false;
     }
 
     /**
      * @return bool
      */
-    function isProtected() {
+    public function isProtected() {
         return false;
     }
 
     /**
      * @return bool
      */
-    function isStatic() {
+    public function isStatic() {
         return false;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultValue() {
+        return $this->reflectionParameter->getDefaultValue();
     }
 }

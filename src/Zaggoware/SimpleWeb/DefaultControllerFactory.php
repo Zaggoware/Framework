@@ -3,6 +3,9 @@
 namespace Zaggoware\SimpleWeb {
 
     use Zaggoware\Exceptions\ArgumentNullException;
+    use Zaggoware\Helpers\StringHelper;
+    use Zaggoware\Reflection\MethodInfo;
+    use Zaggoware\Reflection\Type;
     use Zaggoware\SimpleWeb\ActionResults\ActionResult;
     use Zaggoware\SimpleWeb\Routing\RouteCollection;
 
@@ -51,31 +54,64 @@ namespace Zaggoware\SimpleWeb {
                 throw new ArgumentNullException("action");
             }
 
-            $reflection = new \ReflectionClass($controller);
-
-            if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                $actionName .= "_post";
+            if (strpos($actionName, "_") !== false) {
+                throw new \InvalidArgumentException(
+                    "Action name cannot contain underscores, as it is reserved for request methods (suffixed).");
             }
 
-            if(!$reflection->hasMethod($actionName) || !$reflection->getMethod($actionName)->isPublic()
+            $controllerType = new Type($controller);
+
+            $actionRequestMethods = array(
+                "POST" => "post",
+                "PUT" => "put",
+                "DELETE" => "delete");
+/*
+            if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+                $allowedRequestMethods = array();
+
+                foreach ($controllerType->getMethods() as $method) {
+                    /** @var MethodInfo $method * /
+                    $name = strtolower($method->getName());
+
+                    if (strpos($name, "_") !== false) {
+                        list($methodName, $requestMethod) = explode("_", $name);
+
+                    }
+
+                    if ($name === strtolower($actionName) || $name === strtolower($actionName) ."_get") {
+                        $allowedRequestMethods[] = "GET";
+                    } else {
+
+                    }
+                }
+
+                // WHAT TO RETURN?
+                exit(join(", ", $allowedRequestMethods));
+            }*/
+
+            if (array_key_exists($_SERVER["REQUEST_METHOD"], $actionRequestMethods)) {
+                $actionName .= "_". $actionRequestMethods[$_SERVER["REQUEST_METHOD"]];
+            }
+
+            if (!$controllerType->hasMethod($actionName) || !$controllerType->getMethod($actionName)->isPublic()
                 || ($_SERVER["REQUEST_METHOD"] !== "POST" && strpos($actionName, "_post") !== false)) {
 
                 // HACK: TODO: beautify with Route mappings
-                if ($reflection->hasMethod("__call")) {
-                    $action = $reflection->getMethod("__call");
+                if ($controllerType->hasMethod("__call")) {
+                    $action = $controllerType->getMethod("__call");
 
-                    return $action->invokeArgs($controller, array($actionName, $_REQUEST));
+                    return $action->invoke($controller, array($actionName, $_REQUEST));
                 }
 
                 throw new \RuntimeException("Action '$actionName' could not be found in controller '". get_class($controller)."'.");
             }
 
-            $action = $reflection->getMethod($actionName);
+            $action = $controllerType->getMethod($actionName);
 
             $modelFactory = $this->createModelFactory();
             $models = $modelFactory->buildModels($action);
 
-            return $action->invokeArgs($controller, $models);
+            return $action->invoke($controller, $models);
         }
 
         /**

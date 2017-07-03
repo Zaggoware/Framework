@@ -43,6 +43,13 @@ class MethodInfo implements IMethod {
     private $reflectionMethod;
 
     /**
+     * @return Type
+     */
+    public function getDeclaringType() {
+        return $this->type;
+    }
+
+    /**
      * @return bool
      */
     public function isGetterMethod() {

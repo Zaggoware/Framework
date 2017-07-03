@@ -2,26 +2,27 @@
 
 namespace Zaggoware\SimpleWeb {
 
-    use Zaggoware\Generic\IDictionary;
     use Zaggoware\Reflection\IModelBuilder;
     use Zaggoware\Reflection\DefaultModelBuilder;
-    use Zaggoware\Reflection\Type;
+    use Zaggoware\Reflection\MethodInfo;
+    use Zaggoware\Reflection\ParameterInfo;
 
     class DefaultModelFactory implements IModelFactory {
 
         /**
-         * @param \ReflectionMethod $method
+         * @param MethodInfo $method
          * @throws \ReflectionException
          * @return array
          */
-        public function buildModels(\ReflectionMethod $method) {
+        public function buildModels(MethodInfo $method) {
             $types = array();
             $requestData = Site::getRequestData("get,post");
 
-            foreach($method->getParameters() as $param) {
+            foreach ($method->getParameters() as $param) {
+                /** @var ParameterInfo $param*/
+                
                 $name = $param->getName();
-                $class = $param->getClass();
-                $type = $class !== null ? new Type($class->getName()) : null;
+                $type = $param->getType();
                 $defaultValue = null;
                 $hasDefaultValue = false;
 
@@ -31,7 +32,7 @@ namespace Zaggoware\SimpleWeb {
                 } catch(\Exception $e) {
                 }
 
-                if($type === null) {
+                if ($type === null) {
                     if(!$hasDefaultValue && !$requestData->containsKey($name)) {
                         throw new \ReflectionException("Missing request parameter value for '$name'.");
                     }
