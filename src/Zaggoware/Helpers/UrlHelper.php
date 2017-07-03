@@ -104,6 +104,9 @@ namespace Zaggoware\Helpers {
                 $actionName = $defaultAction;
             }
 
+            $originalControllerName = $controllerName;
+            $originalActionName = $actionName;
+
             $areaName = array_key_exists("area", ($routeParams !== null ? $routeParams : array())) ? $routeParams["area"] : null;
 
             if($useLowerCaseUrls) {
@@ -122,13 +125,13 @@ namespace Zaggoware\Helpers {
             }
 
             if($defaultAction == $actionName) {
-                $actionName = "";
+                $originalActionName = "";
 
                 if($defaultController == $controllerName) {
-                    $controllerName = "";
+                    $originalControllerName = "";
                 }
             } else {
-                $controllerName .= "/";
+                $originalControllerName .= "/";
             }
 
             if (!empty($areaName)) {
@@ -149,7 +152,7 @@ namespace Zaggoware\Helpers {
                 }
             }
 
-            return self::getBaseUrl($scheme !== null, $scheme) . $areaName . $controllerName . $actionName . $queryString;
+            return self::getBaseUrl($scheme !== null, $scheme) . $areaName . $originalControllerName . $originalActionName . $queryString;
         }
 
         public static function content($url, $addFileTime = true) {
