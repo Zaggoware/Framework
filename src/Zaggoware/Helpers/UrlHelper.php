@@ -156,10 +156,22 @@ namespace Zaggoware\Helpers {
         }
 
         public static function content($url, $addFileTime = true) {
-            $normalizedUrl = self::normalize($url, false, false);
+            return self::internalContent($url, $addFileTime, false);
+        }
+
+        public static function absContent($url, $addFileTime = true) {
+            return self::internalContent($url, $addFileTime, true);
+        }
+
+        private static function internalContent($url, $addFileTime, $includeServerInfo) {
+            $normalizedUrl = self::normalize($url, false, $includeServerInfo);
 
             if ($addFileTime) {
                 $path = PathHelper::normalize($url, true);
+
+                if (!file_exists($path)) {
+                    return $normalizedUrl;
+                }
 
                 if (strpos($url, "?") === false) {
                     $normalizedUrl .= "?";

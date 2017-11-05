@@ -7,7 +7,7 @@ use Zaggoware\Reflection\PropertyInfo;
 use Zaggoware\Reflection\Type;
 
 class JsonHelper {
-    public static function makeSerializable($object, $ignoreNullValues = false) {
+    public static function makeSerializable($object, $ignoreNullValues = false, $declareType = false) {
         if ($object === null) {
             return null;
         }
@@ -27,6 +27,11 @@ class JsonHelper {
         }
 
         $type = new Type($object);
+
+        if ($declareType && $type->getClass()->getParentClass() !== null) {
+            $objArray["\$type"] = $type->getShortName();
+        }
+
         foreach ($type->getProperties() as $property) {
             /** @var PropertyInfo $property */
             
