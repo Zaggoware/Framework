@@ -77,6 +77,34 @@ class JsonHelper {
         return $instance;
     }
 
+    public static function deserializeArray($json, $type) {
+        $arr = json_decode($json);
+        if (!is_array($arr)) {
+            throw new \Exception("obj is not an array.");
+        }
+
+        $type = $type instanceof Type ? $type : new Type($type);
+
+        $instances = array();
+        foreach ($arr as $item) {
+            $instance = $type->createInstance();
+
+            foreach ($item as $key => $val) {
+                $property = $type->getProperty($key);
+
+                if ($property === null || !$property->hasSetterMethod()) {
+                    continue;
+                }
+
+                $property->setValue($instance, $val);
+            }
+
+            $instances[] = $instance;
+        }
+
+        return $instances;
+    }
+
     private static function makeValueSerializable($value, $ignoreNullValues) {
         if ($value instanceof \DateTime) {
             return $value->format("Y-m-d\\TH:i:s\\Z");
