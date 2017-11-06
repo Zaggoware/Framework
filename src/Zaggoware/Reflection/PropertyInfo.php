@@ -159,7 +159,7 @@ class PropertyInfo implements IProperty {
             throw new \ReflectionException("Cannot invoke setter-method. Only 1 parameter is supported.");
         }
 
-        $setterMethod->invoke($instance, $value);
+        $setterMethod->invoke($instance, array($value));
     }
 
     /**
