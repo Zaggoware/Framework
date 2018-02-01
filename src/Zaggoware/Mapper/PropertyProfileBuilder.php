@@ -13,6 +13,9 @@ class PropertyProfileBuilder extends ProfileBuilder {
     /** @var bool */
     private $isIgnored;
 
+    /** @var callable */
+    private $valueSetter;
+
     public function __construct(Type $sourceType, PropertyInfo $propertyInfo, $destination) {
         parent::__construct($sourceType, $destination);
 
@@ -21,6 +24,12 @@ class PropertyProfileBuilder extends ProfileBuilder {
 
     public function ignore() {
         $this->isIgnored = true;
+
+        return $this;
+    }
+
+    public function useValue(callable $valueSetter) {
+        $this->valueSetter = $valueSetter;
 
         return $this;
     }
@@ -38,7 +47,7 @@ class PropertyProfileBuilder extends ProfileBuilder {
             throw new \Exception("Cannot create profile without destination type.");
         }
 
-        $profile = new PropertyProfile($this->sourceType, $this->propertyInfo, $this->destinationType, $this->isIgnored);
+        $profile = new PropertyProfile($this->sourceType, $this->propertyInfo, $this->destinationType, $this->isIgnored, $this->valueSetter);
 
         $this->addPropertyProfiles($profile);
 

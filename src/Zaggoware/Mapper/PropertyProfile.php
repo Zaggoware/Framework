@@ -14,20 +14,25 @@ class PropertyProfile extends Profile {
     /** @var bool */
     private $isIgnored = false;
 
+    /** @var callable */
+    private $valueSetter;
+
     /**
      * PropertyProfile constructor.
      * @param Type $sourceType
      * @param PropertyInfo $propertyInfo
      * @param Type $destinationType
      * @param bool $isIgnored
+     * @param callable $valueSetter
      * @throws ArgumentNullException
      */
-    public function __construct(Type $sourceType, PropertyInfo $propertyInfo, Type $destinationType, $isIgnored) {
+    public function __construct(Type $sourceType, PropertyInfo $propertyInfo, Type $destinationType, $isIgnored, callable $valueSetter = null) {
         parent::__construct($sourceType, $destinationType);
-        
+
         $this->propertyInfo = $propertyInfo;
         $this->propertyProfiles = new Dictionary();
         $this->isIgnored = $isIgnored;
+        $this->valueSetter = $valueSetter;
     }
 
     /**
@@ -42,5 +47,13 @@ class PropertyProfile extends Profile {
      */
     public function setIsIgnored($flag) {
         $this->isIgnored = $flag;
+    }
+
+    public function hasValueSetter() {
+        return $this->valueSetter !== null;
+    }
+
+    public function invokeValueSetter($originalValue) {
+        return call_user_func_array($this->valueSetter, array($originalValue));
     }
 }

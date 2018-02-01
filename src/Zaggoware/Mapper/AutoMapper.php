@@ -188,13 +188,17 @@ class AutoMapper {
                         continue;
                     }
 
-                    $destinationPropertyValue = $propertyProfile->getDestinationType()->createInstance();
-                    $destinationPropertyValue = self::mapInternal(
-                        $propertyValue,
-                        $propertyValueType,
-                        $destinationPropertyValue,
-                        new Type($destinationPropertyValue),
-                        $propertyProfile);
+                    if ($propertyProfile->hasValueSetter()) {
+                        $destinationPropertyValue = $propertyProfile->invokeValueSetter($propertyValue);
+                    } else {
+                        $destinationPropertyValue = $propertyProfile->getDestinationType()->createInstance();
+                        $destinationPropertyValue = self::mapInternal(
+                            $propertyValue,
+                            $propertyValueType,
+                            $destinationPropertyValue,
+                            new Type($destinationPropertyValue),
+                            $propertyProfile);
+                    }
                 } else {
                     /** @var Dictionary<string, Profile> $globalProfile */
                     $globalProfile = $globalProfiles[$propertyValueType->getName()];
@@ -217,7 +221,7 @@ class AutoMapper {
                     }
                 }
 
-                $destinationSetterMethod->invoke($destination, $destinationPropertyValue);
+                $destinationSetterMethod->invoke($destination, array($destinationPropertyValue));
             } else {
                 if ($propertyValueType->isBuiltInType() || $propertyValueType->isPhpClass()) {
                     $destinationSetterMethod->invoke($destination, $propertyValue === null ? array(null) : $propertyValue);

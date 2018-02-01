@@ -82,7 +82,7 @@ class ProfileBuilder {
         if (is_callable($optionsAction)) {
             $optionsAction($profile);
         }
-        
+
         $this->propertyProfileBuilders->add($propertyName, $profile);
 
         return $this;
