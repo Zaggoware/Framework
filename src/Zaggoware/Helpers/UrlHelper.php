@@ -61,6 +61,10 @@ namespace Zaggoware\Helpers {
                     $substrStart = 2;
                 }
                 $url = self::getBaseUrl($includeServerInfo) . substr($url, $substrStart);
+
+                if ($includeServerInfo) {
+                    return $url;
+                }
             }
 
             $url = str_replace("\\", "/", $url);
