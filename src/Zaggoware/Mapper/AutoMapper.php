@@ -112,6 +112,10 @@ class AutoMapper {
             throw new ArgumentNullException("singularDestinationType");
         }
 
+        if (!($singularDestinationType instanceof Type)) {
+            $singularDestinationType = new Type($singularDestinationType);
+        }
+
         $result = array();
         foreach ($source as $item) {
             $result[] = self::map($item, $singularDestinationType);
@@ -133,6 +137,10 @@ class AutoMapper {
 
         if ($singularDestinationType === null) {
             throw new ArgumentNullException("singularDestinationType");
+        }
+
+        if (!($singularDestinationType instanceof Type)) {
+            $singularDestinationType = new Type($singularDestinationType);
         }
 
         $result = new ArrayList();
