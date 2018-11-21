@@ -167,8 +167,8 @@ namespace Zaggoware\Helpers {
             return self::internalContent($url, $addFileTime, true);
         }
 
-        public static function isLocalUrl($returnUrl) {
-            return !StringHelper::contains($returnUrl, "://");
+        public static function isLocalUrl($url) {
+            return !StringHelper::contains($url, "://");
         }
 
         private static function internalContent($url, $addFileTime, $includeServerInfo) {
